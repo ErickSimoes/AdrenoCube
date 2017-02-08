@@ -1,8 +1,13 @@
 package com.erick.adrenocube;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.pm.ConfigurationInfo;
 import android.opengl.GLSurfaceView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import opengles.AdrenoGLRenderer;
 
 public class AdrenoActivity extends AppCompatActivity {
 
@@ -14,6 +19,19 @@ public class AdrenoActivity extends AppCompatActivity {
 
         glSurfaceView = new GLSurfaceView(this);
 
-        setContentView(R.layout.activity_adreno);
+        final ActivityManager activityManager = (ActivityManager)
+                getSystemService(Context.ACTIVITY_SERVICE);
+
+        final ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
+        final boolean supportsEs2 = configurationInfo.reqGlEsVersion>= 0x20000;
+
+        if(supportsEs2) {
+            glSurfaceView.setEGLContextClientVersion(2);
+            glSurfaceView.setRenderer(new AdrenoGLRenderer());
+        } else{
+            return;
+        }
+
+        setContentView(glSurfaceView);
     }
 }
